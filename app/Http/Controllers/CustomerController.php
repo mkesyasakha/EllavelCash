@@ -32,30 +32,30 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCustomerRequest $request)
-    {
+    // public function store(StoreCustomerRequest $request)
+    // {
 
-        if ($request->photo) {
-            $photo = $request->file('photo');
-            $path = $photo->store('users', 'public');
-            User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'photo' => $path,
-                'password' => bcrypt($request->password),
-            ])->assignRole('customers');
-        } else {
-            User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'password' => bcrypt($request->password),
-            ])->assignRole('customers');
-        }
-        // dd($request->all());
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
-    }
+    //     if ($request->photo) {
+    //         $photo = $request->file('photo');
+    //         $path = $photo->store('users', 'public');
+    //         User::create([
+    //             'name' => $request->name,
+    //             'email' => $request->email,
+    //             'phone' => $request->phone,
+    //             'photo' => $path,
+    //             'password' => bcrypt($request->password),
+    //         ])->assignRole('customers');
+    //     } else {
+    //         User::create([
+    //             'name' => $request->name,
+    //             'email' => $request->email,
+    //             'phone' => $request->phone,
+    //             'password' => bcrypt($request->password),
+    //         ])->assignRole('customers');
+    //     }
+    //     // dd($request->all());
+    //     return redirect()->route('users.index')->with('success', 'User created successfully.');
+    // }
 
     /**
      * Display the specified resource.

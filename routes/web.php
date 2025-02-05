@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('items', App\Http\Controllers\ItemController::class);
     Route::resource('users', CustomerController::class);
     Route::resource('transactions', TransactionController::class);
+    Route::put('/transactions/{transaction}', [TransactionController::class, 'acc'])->name('transactions.acc');
 });
 
 

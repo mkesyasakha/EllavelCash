@@ -52,6 +52,9 @@
                                 </button>
                             </td>
                             <td>
+                                @if($transaction->status == 'pending')
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#accTransactionModal{{ $transaction->id }}">Terima</button>
+                                @endif
                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editTransactionModal{{ $transaction->id }}">Edit</button>
                                 <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteTransactionModal{{ $transaction->id }}">Hapus</button>
                             </td>
@@ -67,11 +70,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body text-center">
-                                        @if(pathinfo($transaction->proof, PATHINFO_EXTENSION) == 'pdf')
-                                        <iframe src="{{ asset('storage/' . $transaction->proof) }}" width="100%" height="500px"></iframe>
-                                        @else
                                         <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid rounded" alt="Bukti Transaksi">
-                                        @endif
                                     </div>
                                     <div class="modal-footer">
                                         <a href="{{ asset('storage/' . $transaction->proof) }}" class="btn btn-primary" download>Download</a>
@@ -173,9 +172,33 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="accTransactionModal{{ $transaction->id }}" tabindex="-1" aria-labelledby="deleteTransactionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteTransactionModalLabel">Konfirmasi Transaksi</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Apakah Anda yakin ingin menghapus transaksi ini?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                        <form action="{{ route('transactions.acc', $transaction->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-primary">Acc</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center">Tidak ada transaksi tersedia.</td>
+                            <td colspan="8" class="text-center">Tidak ada transaksi tersedia.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -219,11 +242,7 @@
 
                                     <div class="form-group">
                                         <label for="status">Status Transaksi</label>
-                                        <select name="status" id="status" class="form-control">
-                                            <option value="pending">Pending</option>
-                                            <option value="success">Success</option>
-                                            <option value="failed">Failed</option>
-                                        </select>
+                                        <input type="text" name="status" value="pending" id="status" value="pending" class="form-control" readonly>
                                     </div>
                                 </div>
                                 <div class="modal-footer">

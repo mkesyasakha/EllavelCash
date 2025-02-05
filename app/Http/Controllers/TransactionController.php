@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
@@ -47,9 +48,12 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Transaction $transaction)
+    public function acc(Transaction $transaction)
     {
-        //
+        $transaction->update([
+            'status' => 'success'
+        ]);
+        return redirect()->route('transactions.index')->with('success', 'Transaction accepted successfully.');
     }
 
     /**
@@ -65,7 +69,19 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        $transaction->update($request->all());
+        if ($transaction->proof) {
+            Storage::disk('public')->delete($transaction->proof);
+        }
+        $path = $request->file('proof')->store('proofs', 'public');
+        $total = 0;
+        $transaction->update([
+            'proof' => $path,
+            'user_id' => $request->user_id,
+            'description' => $request->description,
+            'transaction_date' => $request->transaction_date,
+            'status' => $request->status,
+            'total' => $total,
+        ]);
         return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
     }
 
@@ -75,6 +91,9 @@ class TransactionController extends Controller
     public function destroy(Transaction $transaction)
     {
         try{
+            if ($transaction->proof) {
+                Storage::disk('public')->delete($transaction->proof);
+            }
             $transaction->delete();
             return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully.');
         }catch(\Exception $e){
