@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('photo')->nullable();
-            $table->string('name');
-            $table->text('description');
-            $table->decimal('price', 8, 2);
-            $table->integer('stock');
+            $table->string('proof');
+            $table->foreignId('user_id')->constrained();
+            $table->text('description')->nullable();
+            $table->integer('total');
+            $table->date('transaction_date');
+            $table->enum('status', ['pending', 'success', 'failed']);
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('transactions');
     }
 };

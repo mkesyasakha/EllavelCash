@@ -31,7 +31,14 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        $item = Item::create($request->all());
+        $path = $request->file('photo')->store('photo', 'public');
+        Item::create([
+            'photo' => $path,
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => $request->stock,
+        ]);
         return redirect()->route('items.index')->with('success', 'Item created successfully.');
     }
 

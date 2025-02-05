@@ -3,46 +3,6 @@
 @section('content')
 <div class="container-fluid mt-4">
     <h1 class="h3 mb-4 text-gray-800">Daftar Customer</h1>
-
-    @hasrole('admin')
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">
-        <i class="fas fa-plus"></i> Tambah Pelanggan
-    </button>
-    @endhasrole
-
-    <!-- Modal Tambah Pelanggan -->
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addModalLabel">Tambah Pelanggan Baru</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="name" name="name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">No. Telepon</label>
-                            <input type="text" class="form-control" id="phone" name="phone">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Tambah</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Tabel Customer untuk Admin -->
     @hasrole('admin')
     <div class="table-responsive">
@@ -50,6 +10,7 @@
             <thead class="table-primary">
                 <tr>
                     <th>No</th>
+                    <th>Photo</th>
                     <th>Nama</th>
                     <th>Email</th>
                     <th>No. Telepon</th>
@@ -60,18 +21,57 @@
                 @foreach($users as $index => $user)
                 <tr>
                     <td>{{ $index + 1 }}</td>
+                    <td>
+                        <img src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('asset/img/undraw_profile_1.svg') }}" alt="User Photo" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                    </td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->phone }}</td>
                     <td>
+                        <!-- Show Button -->
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showModal{{ $user->id }}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <!-- Edit Button -->
                         <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ $user->id }}">
                             <i class="fas fa-edit"></i>
                         </button>
+                        <!-- Delete Button -->
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $user->id }}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>
+
+                <!-- Modal Show Pelanggan -->
+                <div class="modal fade" id="showModal{{ $user->id }}" tabindex="-1" aria-labelledby="showModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="showModalLabel">Detail Pelanggan</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <strong>Nama:</strong> {{ $user->name }}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Email:</strong> {{ $user->email }}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>No. Telepon:</strong> {{ $user->phone }}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Foto:</strong>
+                                    <img src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('asset/img/undraw_profile_1.svg') }}" alt="User Photo" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Modal Edit Pelanggan -->
                 <div class="modal fade" id="editModal{{ $user->id }}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
