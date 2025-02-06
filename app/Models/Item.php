@@ -11,4 +11,9 @@ class Item extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function transactions()
+    {
+        return $this->belongsToMany(Transaction::class, 'transaction_items', 'transaction_id', 'item_id')->withPivot('quantity');
+    }
 }

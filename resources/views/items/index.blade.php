@@ -10,6 +10,16 @@
     </button>
     @endhasrole
 
+    <form action="{{route('items.index')}}" method="GET">
+        <div class="input-group w-50 mx-auto mb-3">
+            <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" value="{{request('search')}}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
     <!-- Tabel Barang -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">

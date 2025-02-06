@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +16,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('items', App\Http\Controllers\ItemController::class);
     Route::resource('users', CustomerController::class);
-    Route::resource('transactions', TransactionController::class);
-    Route::put('/transactions/{transaction}', [TransactionController::class, 'acc'])->name('transactions.acc');
+    Route::resource('transactions', TransactionController::class)->except(['show']);
+    Route::patch('/transactions/{transaction}', [AccController::class, 'acc'])->name('transactions.acc');
+    Route::get('/transactions/status-chart', [TransactionController::class, 'getTransactionStatusData']);
 });
 
 

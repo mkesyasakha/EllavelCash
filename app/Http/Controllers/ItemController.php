@@ -6,15 +6,19 @@ use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use Exception;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::orderBy('id', 'desc')->get();
+        $search = $request->search;
+        $items = Item::orderBy('id', 'desc')
+                ->where('name', 'like', "%$search%")
+                ->get();
         return view('items.index', compact('items'));
     }
 

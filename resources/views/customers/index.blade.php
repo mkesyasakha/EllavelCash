@@ -3,6 +3,16 @@
 @section('content')
 <div class="container-fluid mt-4">
     <h1 class="h3 mb-4 text-gray-800">Daftar Customer</h1>
+    <form action="{{route('users.index')}}" method="GET">
+        <div class="input-group w-50 mx-auto mb-3">
+            <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" value="{{request('search')}}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>
     <!-- Tabel Customer untuk Admin -->
     @hasrole('admin')
     <div class="table-responsive">

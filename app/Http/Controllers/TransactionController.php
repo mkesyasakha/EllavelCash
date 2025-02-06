@@ -2,96 +2,92 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::all();
+        $search = $request->search;
+        $transactions = Transaction::whereHas('customers', function ($q) use ($search) {
+            $q->where('name', 'like', "%$search%");
+        })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
+        ->orderBy('id', 'desc')->get();
+        $items = Item::all();
         $customers = User::role('customers')->get();
-        return view('transactions.index', compact('transactions', 'customers'));
+        return view('transactions.index', compact('transactions', 'customers', 'items'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
         $path = $request->file('proof')->store('proofs', 'public');
-        $total = 0;
-        Transaction::create([
+
+        $transaction = Transaction::create([
             'proof' => $path,
             'user_id' => $request->user_id,
             'description' => $request->description,
             'transaction_date' => $request->transaction_date,
-            'status' => $request->status,
-            'total' => $total,
+            'status' => $request->status ?? 'pending',
+            'total' => 0, // Akan dihitung di bawah
         ]);
+
+        $total = 0;
+        foreach ($request->items as $index => $item_id) {
+            $item = Item::find($item_id);
+            $quantity = $request->quantities[$index] ?? 1;
+            $transaction->items()->attach($item_id, ['quantity' => $quantity]);
+            $total += $item->price * $quantity;
+        }
+
+        $transaction->update(['total' => $total]);
+
         return redirect()->route('transactions.index')->with('success', 'Transaction created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function acc(Transaction $transaction)
+    public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        $transaction->update([
-            'status' => 'success'
-        ]);
-        return redirect()->route('transactions.index')->with('success', 'Transaction accepted successfully.');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Transaction $transaction)
-    {
-        if ($transaction->proof) {
-            Storage::disk('public')->delete($transaction->proof);
+        
+        if ($request->hasFile('proof')) {
+            if ($transaction->proof) {
+                Storage::disk('public')->delete($transaction->proof);
+            }
+            $path = $request->file('proof')->store('proofs', 'public');
+            $transaction->proof = $path;
         }
-        $path = $request->file('proof')->store('proofs', 'public');
-        $total = 0;
+        
         $transaction->update([
-            'proof' => $path,
             'user_id' => $request->user_id,
             'description' => $request->description,
             'transaction_date' => $request->transaction_date,
             'status' => $request->status,
-            'total' => $total,
         ]);
+        
+        $transaction->items()->detach();
+        $total = 0;
+        foreach ($request->items as $index => $item_id) {
+            $item = Item::find($item_id);
+            $quantity = $request->quantities[$index] ?? 1;
+            $transaction->items()->attach($item_id, ['quantity' => $quantity]);
+            $total += $item->price * $quantity;
+        }
+        
+        $transaction->update(['total' => $total]);
+        
         return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
+    
+
+    public function destroy(Transaction $transaction){
         try{
-            if ($transaction->proof) {
+            $transaction->items()->detach();
+            if($transaction->proof) {
                 Storage::disk('public')->delete($transaction->proof);
             }
             $transaction->delete();
