@@ -116,6 +116,11 @@
                                         <p>Terima kasih atas pembelian Anda!</p>
                                     </div>
                                     <div class="modal-footer">
+                                        
+                                        <a href="{{ route('transactions.download-pdf', $transaction->id) }}" class="btn btn-danger">
+                                            <i class="fas fa-file-pdf"></i> Download PDF
+                                        </a>
+                                     
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                                     </div>
                                 </div>
@@ -320,7 +325,7 @@
                             <div class="d-flex mb-2">
                                 <select name="items[]" class="form-control mr-2">
                                     @foreach($items as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
+                                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }} ({{$item->stock}})</option>
                                     @endforeach
                                 </select>
                                 <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
@@ -351,7 +356,7 @@
             newItem.innerHTML = `
             <select name="items[]" class="form-control mr-2">
                 @foreach($items as $item)
-                <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
+                <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}  ({{$item->stock}})</option>
                 @endforeach
             </select>
             <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
@@ -377,7 +382,7 @@
                 newItem.innerHTML = `
                 <select name="items[]" class="form-control mr-2">
                     @foreach($items as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
+                    <option value="{{ $item->name }}">{{ $item->id }} - {{$item->stock}}</option>
                     @endforeach
                 </select>
                 <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">

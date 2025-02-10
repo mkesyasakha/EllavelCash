@@ -5,6 +5,7 @@
     <h1 class="h3 mb-4 text-gray-800">Daftar Barang</h1>
 
     @hasrole('admin')
+    <!-- Tombol Tambah Barang -->
     <button class="btn btn-primary mb-4" data-toggle="modal" data-target="#addItemModal">
         <i class="fas fa-plus"></i> Tambah Barang
     </button>
@@ -120,17 +121,59 @@
                                         </form>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center">Tidak ada barang tersedia.</td>
-                        </tr>
-                        @endforelse
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">Tidak ada barang tersedia.</td>
+                                </tr>
+                                @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Tambah Barang -->
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Barang</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="photo">Foto Barang</label>
+                        <input type="file" class="form-control" id="photo" name="photo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Nama Barang</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stok</label>
+                        <input type="number" class="form-control" id="stock" name="stock" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Harga</label>
+                        <input type="number" class="form-control" id="price" name="price" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Tambah Barang</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Item;
+use Barryvdh\DomPDF\Facade\Pdf; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +23,15 @@ class TransactionController extends Controller
         $items = Item::all();
         $customers = User::role('customers')->get();
         return view('transactions.index', compact('transactions', 'customers', 'items'));
+    }
+
+    public function downloadPDF($id)
+    {
+        $transaction = Transaction::with('items', 'customers')->findOrFail($id);
+
+        $pdf = PDF::loadView('transactions.receipt', compact('transaction'));
+
+        return $pdf->download('struk_transaksi_' . $transaction->id .'.pdf');
     }
 
     public function store(StoreTransactionRequest $request)
@@ -63,22 +73,29 @@ class TransactionController extends Controller
                 Storage::disk('public')->delete($transaction->proof);
             }
             $path = $request->file('proof')->store('proofs', 'public');
-            $transaction->proof = $path;
         }
         
         $transaction->update([
+            'proof' => $path,
             'user_id' => $request->user_id,
             'description' => $request->description,
             'transaction_date' => $request->transaction_date,
             'status' => $request->status,
         ]);
         
-        $transaction->items()->detach();
         $total = 0;
+        $olditems = $transaction->items;
+        foreach ($olditems as $olditem) {
+            $item = Item::find($olditem->id);
+            $oldquantity = $olditem->pivot->quantity;
+            $item->increment('stock', $oldquantity);
+        }
+        $transaction->items()->detach();
         foreach ($request->items as $index => $item_id) {
             $item = Item::find($item_id);
             $quantity = $request->quantities[$index] ?? 1;
             $transaction->items()->attach($item_id, ['quantity' => $quantity]);
+            $item->decrement('stock', $quantity);
             $total += $item->price * $quantity;
         }
         

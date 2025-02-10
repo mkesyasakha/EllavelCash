@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('transactions', TransactionController::class)->except(['show']);
     Route::patch('/transactions/{transaction}', [AccController::class, 'acc'])->name('transactions.acc');
     Route::get('/transactions/status-chart', [TransactionController::class, 'getTransactionStatusData']);
+    Route::get('/transactions/{id}/download-pdf', [TransactionController::class, 'downloadPDF'])->name('transactions.download-pdf');
 });
 
 
