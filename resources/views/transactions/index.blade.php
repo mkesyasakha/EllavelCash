@@ -33,9 +33,7 @@
                             <th>Tanggal Transaksi</th>
                             <th>Bukti</th>
                             <th>Status</th>
-                            @if ('status' == 'pending')
                             <th>Aksi</th>
-                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -58,13 +56,71 @@
                             <td>
                                 <!-- Tombol Edit memicu modal edit -->
                                 @if ($transaction->status == 'pending')
-                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#accTransactionModal-{{ $transaction->id }}">Acc</button>
+                                <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#accTransactionModal-{{ $transaction->id }}">Acc</button>
                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editTransactionModal-{{ $transaction->id }}">Edit</button>
                                 @endif
                                 <!-- Tombol Hapus memicu modal delete -->
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#showTransactionModal-{{ $transaction->id }}">Detail</button>
                             </td>
                         </tr>
 
+                        <div class="modal fade" id="proofModal{{ $transaction->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $transaction->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="proofModalLabel{{ $transaction->id }}">Bukti Transaksi</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid rounded" alt="Bukti Transaksi">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{{ asset('storage/' . $transaction->proof) }}" class="btn btn-primary" download>Download</a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Detail Transaksi -->
+                        <div class="modal fade" id="showTransactionModal-{{ $transaction->id }}" tabindex="-1" aria-labelledby="showTransactionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="showTransactionModalLabel">Struk Pembelian</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <h4>EllavelCash</h4>
+                                        <hr>
+                                        <p><strong>Nama Pelanggan:</strong> {{ optional($transaction->customers)->name }}</p>
+                                        <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($transaction->transaction_date)->format('j M Y') }}</p>
+                                        <hr>
+                                        <div class="d-flex flex-column align-items-start">
+                                            @foreach($transaction->items as $item)
+                                            <div class="w-100 d-flex justify-content-between">
+                                                <span>{{ $item->name }} ({{ $item->pivot->quantity }}x)</span>
+                                                <span>Rp.{{ number_format($item->pivot->quantity * $item->price, 2) }}</span>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <hr>
+                                        <p><strong>Total:</strong> Rp.{{ number_format($transaction->total, 2) }}</p>
+                                        <p><strong>Status:</strong> <span class="badge {{ $transaction->status == 'pending' ? 'bg-warning' : 'bg-success' }}">{{ ucfirst($transaction->status) }}</span></p>
+                                        <hr>
+                                        <p><strong>Bukti Transaksi:</strong></p>
+                                        <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid" alt="Bukti Transaksi">
+                                        <hr>
+                                        <p>Terima kasih atas pembelian Anda!</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <!-- Modal Edit Transaksi -->
@@ -159,7 +215,28 @@
                         </div>
                         <!-- End Modal Edit Transaksi -->
 
-                        <!-- Modal Acc Transaksi -->
+                        <!-- Modal Hapus Transaksi -->
+                        <div class="modal fade" id="deleteTransactionModal-{{ $transaction->id }}">
+                            <div class="modal-dialog">
+                                <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Hapus Transaksi</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Apakah anda yakin ingin menghapus transaksi ini?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger">Hapus</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div class="modal fade" id="accTransactionModal-{{ $transaction->id }}">
                             <div class="modal-dialog">
                                 <form action="{{ route('transactions.acc', $transaction->id) }}" method="POST">
@@ -183,24 +260,7 @@
                         </div>
                         <!-- End Modal Hapus Transaksi -->
 
-                        <div class="modal fade" id="proofModal{{ $transaction->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $transaction->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="proofModalLabel{{ $transaction->id }}">Bukti Transaksi</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body text-center">
-                                        <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid rounded" alt="Bukti Transaksi">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a href="{{ asset('storage/' . $transaction->proof) }}" class="btn btn-primary" download>Download</a>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @endforeach
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -282,93 +342,58 @@
 <!-- Script untuk menambah item secara dinamis -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        function updateItemSelection(containerId) {
-            let selectedItems = new Set();
-            document.querySelectorAll(`#${containerId} select[name="items[]"]`).forEach(select => {
-                selectedItems.add(select.value);
-            });
-            return selectedItems;
-        }
-
-        function addItem(containerId, transactionId = null) {
-            let container = document.getElementById(containerId);
-            let selectedItems = updateItemSelection(containerId);
-
+        // Untuk modal tambah transaksi
+        document.querySelector('.add-item').addEventListener('click', function() {
+            let container = document.getElementById('items-container');
             let newItem = document.createElement('div');
             newItem.classList.add('d-flex', 'mb-2');
 
-            let selectOptions = `
-                @foreach($items as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
-                @endforeach
-            `;
-
             newItem.innerHTML = `
-                <select name="items[]" class="form-control mr-2">
-                    ${selectOptions}
-                </select>
-                <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
-                <button type="button" class="btn btn-danger ml-2 remove-item">-</button>
-            `;
-
-            let selectElement = newItem.querySelector('select');
-
-            // Filter item yang sudah dipilih
-            selectElement.querySelectorAll('option').forEach(option => {
-                if (selectedItems.has(option.value)) {
-                    option.disabled = true;
-                }
-            });
-
-            selectElement.addEventListener('change', function() {
-                updateItemSelection(containerId);
-            });
-
+            <select name="items[]" class="form-control mr-2">
+                @foreach($items as $item)
+                <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
+                @endforeach
+            </select>
+            <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
+            <button type="button" class="btn btn-danger ml-2 remove-item">-</button>
+        `;
             container.appendChild(newItem);
-        }
-
-        function handleItemSelection(containerId) {
-            document.getElementById(containerId).addEventListener('change', function(event) {
-                if (event.target.name === "items[]") {
-                    let selectedValue = event.target.value;
-                    let allSelects = document.querySelectorAll(`#${containerId} select[name="items[]"]`);
-
-                    allSelects.forEach(select => {
-                        select.querySelectorAll('option').forEach(option => {
-                            option.disabled = option.value !== selectedValue && updateItemSelection(containerId).has(option.value);
-                        });
-                    });
-                }
-            });
-        }
-
-        // Untuk modal tambah transaksi
-        document.querySelector('.add-item').addEventListener('click', function() {
-            addItem('items-container');
         });
 
-        handleItemSelection('items-container');
+        // Untuk modal tambah transaksi (remove item)
+        document.getElementById('items-container').addEventListener('click', function(event) {
+            if (event.target.classList.contains('remove-item')) {
+                event.target.parentElement.remove();
+            }
+        });
 
         // Untuk modal edit transaksi
         document.querySelectorAll('.add-item-edit').forEach(function(button) {
             button.addEventListener('click', function() {
                 let transactionId = this.getAttribute('data-transaction-id');
-                addItem('edit-items-container-' + transactionId, transactionId);
-                handleItemSelection('edit-items-container-' + transactionId);
+                let container = document.getElementById('edit-items-container-' + transactionId);
+                let newItem = document.createElement('div');
+                newItem.classList.add('d-flex', 'mb-2');
+                newItem.innerHTML = `
+                <select name="items[]" class="form-control mr-2">
+                    @foreach($items as $item)
+                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}</option>
+                    @endforeach
+                </select>
+                <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
+                <button type="button" class="btn btn-danger ml-2 remove-item">-</button>
+            `;
+                container.appendChild(newItem);
             });
         });
 
-        // Event delegation untuk tombol remove item
+        // Event delegation untuk tombol remove item (berlaku untuk semua modal)
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-item')) {
-                let parent = event.target.parentElement;
-                let containerId = parent.parentElement.id;
-                parent.remove();
-                updateItemSelection(containerId);
+                event.target.parentElement.remove();
             }
         });
     });
 </script>
-
 
 @endsection

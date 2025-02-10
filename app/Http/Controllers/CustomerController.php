@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.           
      */
     public function index(Request $request)
     {
@@ -19,8 +19,8 @@ class CustomerController extends Controller
         $users = User::where('name', 'like', "%$search%")
             ->orWhere('email', 'like', "%$search%")
             ->orWhere('phone', 'like', "%$search%")
-            ->orderBy('created_at', 'desc')
-            ->role('customers')
+            ->orderBy('id', 'desc')
+            ->role('customers')         
             ->where('id', '!=', auth()->id())
             ->get();
         return view('customers.index', compact('users'));

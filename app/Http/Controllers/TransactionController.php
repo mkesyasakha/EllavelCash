@@ -41,8 +41,13 @@ class TransactionController extends Controller
         foreach ($request->items as $index => $item_id) {
             $item = Item::find($item_id);
             $quantity = $request->quantities[$index] ?? 1;
-            $transaction->items()->attach($item_id, ['quantity' => $quantity]);
-            $total += $item->price * $quantity;
+            if($item->stock < $quantity) {
+                return redirect()->route('transactions.index')->with('error', "Stok untuk item '{$item->name}' tidak mencukupi.");
+            }else{
+                $item->decrement('stock', $quantity);
+                $transaction->items()->attach($item_id, ['quantity' => $quantity]);
+                $total += $item->price * $quantity;
+            }
         }
 
         $transaction->update(['total' => $total]);
