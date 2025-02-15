@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Models\Discount;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Item;
@@ -31,7 +32,7 @@ class TransactionController extends Controller
         ->orderBy('id', 'desc')
         ->paginate(6)
         ->appends(['search' => $search]);
-        
+
         $items = Item::all();
         $customers = User::role('customers')->get();
         return view('transactions.index', compact('transactions', 'customers', 'items', 'transaction_customers'));
@@ -115,6 +116,21 @@ class TransactionController extends Controller
         
         return redirect()->route('transactions.index')->with('success', 'Transaction updated successfully.');
     }
+
+    public function applyPromo(Request $request)
+    {
+        $promo = Discount::where('code', $request->promo_code)->first();
+
+        if (!$promo) {
+            return redirect()->back()->withErrors('Invalid promo code');
+        }
+
+        $transaction = Transaction::findOrFail($request->transaction_id);
+        $transaction->update(['promo_id' => $promo->id]);
+
+        return redirect()->back()->with('success', 'Promo code applied successfully!');
+    }
+
 
     
 

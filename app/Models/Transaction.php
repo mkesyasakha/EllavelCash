@@ -16,4 +16,9 @@ class Transaction extends Model
     {
         return $this->belongsToMany(Item::class, 'transaction_items', 'transaction_id', 'item_id')->withPivot('quantity');
     }
+
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
+    }
 }

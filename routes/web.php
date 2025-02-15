@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TransactionController;
@@ -19,10 +20,12 @@ Route::middleware('auth')->group(function(){
     Route::resource('users', CustomerController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('transactions', TransactionController::class)->except(['show']);
+    Route::resource('discounts', DiscountController::class);
     Route::patch('/transactions/{transaction}', [AccController::class, 'acc'])->name('transactions.acc');
     Route::get('/transactions/status-chart', [TransactionController::class, 'getTransactionStatusData']);
     Route::get('/transactions/{id}/download-pdf', [TransactionController::class, 'downloadPDF'])->name('transactions.download-pdf');
     Route::get('/latest-transactions', [MessageController::class, 'getLatestTransactions']);
+    Route::post('/transactions/apply-promo', [TransactionController::class, 'applyPromo'])->name('transactions.applyPromo');
 
 });
 
