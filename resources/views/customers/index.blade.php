@@ -28,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($users as $index => $user)
+                @forelse($users as $index => $user)
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>
@@ -43,9 +43,6 @@
                             <i class="fas fa-eye"></i>
                         </button>
                         <!-- Edit Button -->
-                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ $user->id }}">
-                            <i class="fas fa-edit"></i>
-                        </button>
                         <!-- Delete Button -->
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $user->id }}">
                             <i class="fas fa-trash"></i>
@@ -139,7 +136,11 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Tidak ada Pelanggan tersedia.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

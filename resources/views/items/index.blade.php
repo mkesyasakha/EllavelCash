@@ -35,6 +35,7 @@
                             <th>Foto</th>
                             <th>Nama</th>
                             <th>Deskripsi</th>
+                            <th>Kategori</th>
                             <th>Stok</th>
                             <th>Harga</th>
                             <th>Aksi</th>
@@ -44,9 +45,10 @@
                         @forelse ($items as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td><img src="{{ asset('storage/' . $item->photo) }}" alt="Foto Barang" width="50"></td>
+                            <td><img src="{{$item->photo ? asset('storage/' . $item->photo) : 'Tidak ada foto'}}" alt="Foto Barang" width="50"></td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->description }}</td>
+                            <td>{{ $item->category->name }}</td>
                             <td>{{ $item->stock }}</td>
                             <td>{{ number_format($item->price, 2, ',', '.') }}</td>
                             <td>
@@ -70,24 +72,40 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
+                                                <label for="category_id">Kategori</label>
+                                                <select class="form-control" id="category_id" name="category_id">
+                                                    @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}" {{ $item->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="photo">Foto Barang</label>
                                                 <input type="file" class="form-control" id="photo" name="photo">
                                             </div>
                                             <div class="form-group">
                                                 <label for="name">Nama Barang</label>
-                                                <input type="text" class="form-control" id="name" name="name" value="{{ $item->name }}" required>
+                                                <input type="text" class="form-control" id="name" name="name" value="{{ $item->name }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="description">Deskripsi</label>
-                                                <textarea class="form-control" id="description" name="description" required>{{ $item->description }}</textarea>
+                                                <textarea class="form-control" id="description" name="description">{{ $item->description }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="category_id">Kategori</label>
+                                                <select class="form-control" id="category_id" name="category_id">
+                                                    @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                             <div class="form-group">
                                                 <label for="stock">Stok</label>
-                                                <input type="number" class="form-control" id="stock" name="stock" value="{{ $item->stock }}" required>
+                                                <input type="number" class="form-control" id="stock" name="stock" value="{{ $item->stock }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="price">Harga</label>
-                                                <input type="number" class="form-control" id="price" name="price" value="{{ $item->price }}" required>
+                                                <input type="number" class="form-control" id="price" name="price" value="{{ $item->price }}">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -152,19 +170,27 @@
                     </div>
                     <div class="form-group">
                         <label for="name">Nama Barang</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <input type="text" class="form-control" id="name" name="name">
                     </div>
                     <div class="form-group">
                         <label for="description">Deskripsi</label>
-                        <textarea class="form-control" id="description" name="description" required></textarea>
+                        <textarea class="form-control" id="description" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="category_id">Kategori</label>
+                        <select class="form-control" id="category_id" name="category_id">
+                            @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="stock">Stok</label>
-                        <input type="number" class="form-control" id="stock" name="stock" required>
+                        <input type="number" class="form-control" id="stock" name="stock">
                     </div>
                     <div class="form-group">
                         <label for="price">Harga</label>
-                        <input type="number" class="form-control" id="price" name="price" required>
+                        <input type="number" class="form-control" id="price" name="price">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -175,5 +201,4 @@
         </form>
     </div>
 </div>
-
 @endsection

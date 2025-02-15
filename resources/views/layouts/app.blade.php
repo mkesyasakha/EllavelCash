@@ -36,7 +36,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('landing')}}">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -81,10 +81,18 @@
             </li> -->
 
             <!-- Nav Item - Charts -->
+             @hasrole('admin')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('users.index')}}">
                     <i class="bi bi-person-badge-fill"></i>
                     <span>Customers</span></a>
+            </li>
+            @endhasrole
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('categories.index')}}">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <span>Categories</span></a>
             </li>
 
             <!-- Nav Item - Tables -->
@@ -294,12 +302,14 @@
 
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
+                            @auth
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::user()->name}}</span>
                                 <img class="img-profile rounded-circle"
                                     src="{{Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('asset/img/undraw_profile.svg') }}">
                             </a>
+                            @endauth
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">

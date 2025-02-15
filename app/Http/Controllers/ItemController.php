@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
+use App\Models\Category;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,8 @@ class ItemController extends Controller
         $items = Item::orderBy('id', 'desc')
                 ->where('name', 'like', "%$search%")
                 ->get();
-        return view('items.index', compact('items'));
+        $categories = Category::all();
+        return view('items.index', compact('items', 'categories'));
     }
 
     /**
@@ -41,6 +43,7 @@ class ItemController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
+            'category_id' => $request->category_id,
             'stock' => $request->stock,
         ]);
         return redirect()->route('items.index')->with('success', 'Item created successfully.');

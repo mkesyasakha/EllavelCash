@@ -16,4 +16,8 @@ class Item extends Model
     {
         return $this->belongsToMany(Transaction::class, 'transaction_items', 'transaction_id', 'item_id')->withPivot('quantity');
     }
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+    }
 }

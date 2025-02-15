@@ -7,8 +7,9 @@ use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Item;
-use Barryvdh\DomPDF\Facade\Pdf; 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
@@ -20,9 +21,17 @@ class TransactionController extends Controller
             $q->where('name', 'like', "%$search%");
         })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
         ->orderBy('id', 'desc')->get();
+
+        $transaction_customers = Transaction::where('user_id', auth()->id())
+        ->whereHas('customers', function ($q) use ($search) {
+            $q->where('name', 'like', "%$search%");
+        })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
+        ->orderBy('id', 'desc')
+        ->get();
+
         $items = Item::all();
         $customers = User::role('customers')->get();
-        return view('transactions.index', compact('transactions', 'customers', 'items'));
+        return view('transactions.index', compact('transactions', 'customers', 'items', 'transaction_customers'));
     }
 
     public function downloadPDF($id)
@@ -38,22 +47,22 @@ class TransactionController extends Controller
     {
         $path = $request->file('proof')->store('proofs', 'public');
 
-        $transaction = Transaction::create([
-            'proof' => $path,
-            'user_id' => $request->user_id,
-            'description' => $request->description,
-            'transaction_date' => $request->transaction_date,
-            'status' => $request->status ?? 'pending',
-            'total' => 0, // Akan dihitung di bawah
-        ]);
 
         $total = 0;
         foreach ($request->items as $index => $item_id) {
             $item = Item::find($item_id);
             $quantity = $request->quantities[$index] ?? 1;
-            if($item->stock < $quantity) {
+            if ($item->stock < $quantity) {
                 return redirect()->route('transactions.index')->with('error', "Stok untuk item '{$item->name}' tidak mencukupi.");
             }else{
+                $transaction = Transaction::create([
+                    'proof' => $path,
+                    'user_id' => $request->user_id,
+                    'description' => $request->description,
+                    'transaction_date' => $request->transaction_date,
+                    'status' => $request->status ?? 'pending',
+                    'total' => 0, // Akan dihitung di bawah
+                ]);
                 $item->decrement('stock', $quantity);
                 $transaction->items()->attach($item_id, ['quantity' => $quantity]);
                 $total += $item->price * $quantity;
