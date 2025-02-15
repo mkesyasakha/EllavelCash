@@ -4,6 +4,7 @@ use App\Http\Controllers\AccController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,8 @@ Route::middleware('auth')->group(function(){
     Route::patch('/transactions/{transaction}', [AccController::class, 'acc'])->name('transactions.acc');
     Route::get('/transactions/status-chart', [TransactionController::class, 'getTransactionStatusData']);
     Route::get('/transactions/{id}/download-pdf', [TransactionController::class, 'downloadPDF'])->name('transactions.download-pdf');
+    Route::get('/latest-transactions', [MessageController::class, 'getLatestTransactions']);
+
 });
 
 

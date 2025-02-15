@@ -20,15 +20,18 @@ class TransactionController extends Controller
         $transactions = Transaction::whereHas('customers', function ($q) use ($search) {
             $q->where('name', 'like', "%$search%");
         })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
-        ->orderBy('id', 'desc')->get();
+        ->orderBy('id', 'desc')
+        ->paginate(6)
+        ->appends(['search' => $search]);
 
         $transaction_customers = Transaction::where('user_id', auth()->id())
         ->whereHas('customers', function ($q) use ($search) {
             $q->where('name', 'like', "%$search%");
         })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
         ->orderBy('id', 'desc')
-        ->get();
-
+        ->paginate(6)
+        ->appends(['search' => $search]);
+        
         $items = Item::all();
         $customers = User::role('customers')->get();
         return view('transactions.index', compact('transactions', 'customers', 'items', 'transaction_customers'));

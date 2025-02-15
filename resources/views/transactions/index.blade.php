@@ -269,6 +269,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="d-flex justify-content-center mt-3">
+                {{ $transactions->links('vendor.pagination.bootstrap-4') }}
+            </div>
         </div>
     </div>
     @endhasrole
@@ -513,6 +516,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $transaction_customers->links('vendor.pagination.bootstrap-4') }}
+                </div>
             </div>
         </div>
     </div>
@@ -663,6 +669,18 @@
 <!-- Script untuk menambah item secara dinamis -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        function updateAvailableItems(container) {
+            let selectedItems = Array.from(container.querySelectorAll('select[name="items[]"]'))
+                .map(select => select.value);
+
+            container.querySelectorAll('select[name="items[]"]').forEach(select => {
+                let currentValue = select.value;
+                select.querySelectorAll('option').forEach(option => {
+                    option.hidden = selectedItems.includes(option.value) && option.value !== currentValue;
+                });
+            });
+        }
+
         // Untuk modal tambah transaksi
         document.querySelector('.add-item').addEventListener('click', function() {
             let container = document.getElementById('items-container');
@@ -671,20 +689,24 @@
 
             newItem.innerHTML = `
             <select name="items[]" class="form-control mr-2">
+                <option value="" selected disabled>Pilih Item</option>
                 @foreach($items as $item)
-                <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }}  ({{$item->stock}})</option>
+                <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }} ({{$item->stock}})</option>
                 @endforeach
             </select>
             <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
             <button type="button" class="btn btn-danger ml-2 remove-item">-</button>
         `;
+
             container.appendChild(newItem);
+            updateAvailableItems(container);
         });
 
         // Untuk modal tambah transaksi (remove item)
         document.getElementById('items-container').addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-item')) {
                 event.target.parentElement.remove();
+                updateAvailableItems(document.getElementById('items-container'));
             }
         });
 
@@ -695,23 +717,37 @@
                 let container = document.getElementById('edit-items-container-' + transactionId);
                 let newItem = document.createElement('div');
                 newItem.classList.add('d-flex', 'mb-2');
+
                 newItem.innerHTML = `
                 <select name="items[]" class="form-control mr-2">
+                    <option value="" selected disabled>Pilih Item</option>
                     @foreach($items as $item)
-                    <option value="{{ $item->name }}">{{ $item->id }} - {{$item->stock}}</option>
+                    <option value="{{ $item->id }}">{{ $item->name }} - Rp{{ number_format($item->price, 0, ',', '.') }} ({{$item->stock}})</option>
                     @endforeach
                 </select>
                 <input type="number" name="quantities[]" class="form-control w-25" placeholder="Qty" min="1" value="1">
                 <button type="button" class="btn btn-danger ml-2 remove-item">-</button>
             `;
+
                 container.appendChild(newItem);
+                updateAvailableItems(container);
             });
         });
 
         // Event delegation untuk tombol remove item (berlaku untuk semua modal)
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-item')) {
+                let container = event.target.closest('#items-container, .edit-items-container');
                 event.target.parentElement.remove();
+                updateAvailableItems(container);
+            }
+        });
+
+        // Event listener untuk memastikan hanya satu item yang bisa dipilih
+        document.addEventListener('change', function(event) {
+            if (event.target.matches('select[name="items[]"]')) {
+                let container = event.target.closest('#items-container, .edit-items-container');
+                updateAvailableItems(container);
             }
         });
     });
