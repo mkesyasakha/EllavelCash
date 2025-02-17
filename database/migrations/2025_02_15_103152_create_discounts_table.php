@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->integer('discount_percentage')->nullable(); // Potongan dalam persen
-            $table->integer('discount_mount')->nullable(); // Potongan dalam persen
+            $table->integer('discount_percentage')->nullable(); // Potongan dalam persen// Potongan dalam persen
             $table->date('valid_until');
             $table->enum('status', ['active', 'expired']);
             $table->timestamps();

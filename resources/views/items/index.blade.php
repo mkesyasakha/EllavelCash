@@ -153,7 +153,7 @@
                                 </div>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">Tidak ada barang tersedia.</td>
+                                    <td colspan="8" class="text-center">Tidak ada barang tersedia.</td>
                                 </tr>
                                 @endforelse
                     </tbody>

@@ -4,16 +4,6 @@
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Daftar Transaksi</h1>
 
-    <form action="{{ route('transactions.index') }}" method="GET">
-        <div class="input-group w-50 mx-auto mb-3">
-            <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Search for..." value="{{ request('search') }}">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
-        </div>
-    </form>
 
     <button class="btn btn-primary mb-4" data-toggle="modal" data-target="#addTransactionModal">Tambah Transaksi</button>
     @hasrole('admin')
@@ -22,6 +12,14 @@
             <h6 class="m-0 font-weight-bold text-primary">Tabel Transaksi</h6>
         </div>
         <div class="card-body">
+            <form method="GET" action="{{ route('transactions.index') }}" class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Search category..." value="{{ request('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
@@ -37,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($transactions as $index => $transaction)
+                        @forelse($transactions as $index => $transaction)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ optional($transaction->customers)->name }}</td>
@@ -301,8 +299,11 @@
                             </div>
                         </div>
                         <!-- End Modal Hapus Transaksi -->
-
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">Tidak ada barang tersedia.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
