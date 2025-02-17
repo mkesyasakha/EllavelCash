@@ -87,13 +87,13 @@
                     <i class="bi bi-person-badge-fill"></i>
                     <span>Customers</span></a>
             </li>
-            @endhasrole
 
             <li class="nav-item">
                 <a class="nav-link" href="{{route('categories.index')}}">
                     <i class="bi bi-person-badge-fill"></i>
                     <span>Categories</span></a>
             </li>
+            @endhasrole
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">
