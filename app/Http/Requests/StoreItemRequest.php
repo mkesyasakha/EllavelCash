@@ -23,7 +23,7 @@ class StoreItemRequest extends FormRequest
     {
         return [
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:items,id',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',

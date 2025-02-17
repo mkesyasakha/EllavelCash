@@ -52,7 +52,7 @@
                                             @method('PUT')
                                             <div class="form-group">
                                                 <label for="categoryName{{ $category->id }}">Category Name</label>
-                                                <input type="text" class="form-control" id="categoryName{{ $category->id }}" name="name" value="{{ $category->name }}" required>
+                                                <input type="text" class="form-control" id="categoryName{{ $category->id }}" name="name" value="{{ $category->name }}">
                                             </div>
                                             <button type="submit" class="btn btn-primary">Save Changes</button>
                                         </form>
@@ -111,7 +111,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="categoryName">Category Name</label>
-                        <input type="text" class="form-control" id="categoryName" name="name" required>
+                        <input type="text" class="form-control" id="categoryName" name="name">
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>

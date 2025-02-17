@@ -11,22 +11,34 @@
     </button>
     @endhasrole
 
-    <form action="{{route('items.index')}}" method="GET">
-        <div class="input-group w-50 mx-auto mb-3">
-            <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" value="{{request('search')}}">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
-        </div>
-    </form>
-
+    
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Tabel Barang</h6>
         </div>
         <div class="card-body">
+            <form action="{{ route('items.index') }}" method="GET">
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" name="search" class="form-control" placeholder="Cari barang..."
+                            value="{{ request('search') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="sort_by" class="form-control">
+                            <option value="">Semua Kategori</option>
+                            @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('sort_by') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+            </form>
+            <br>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -148,6 +160,9 @@
                 </table>
             </div>
         </div>
+        <div class="d-flex justify-content-center mt-3">
+            {{ $items->links('vendor.pagination.bootstrap-4') }}
+        </div>
     </div>
 </div>
 
@@ -166,7 +181,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="photo">Foto Barang</label>
-                        <input type="file" class="form-control" id="photo" name="photo" required>
+                        <input type="file" class="form-control" id="photo" name="photo">
                     </div>
                     <div class="form-group">
                         <label for="name">Nama Barang</label>

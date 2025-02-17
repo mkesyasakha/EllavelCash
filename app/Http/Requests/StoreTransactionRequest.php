@@ -17,7 +17,7 @@ class StoreTransactionRequest extends FormRequest
             'proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'user_id' => 'required|exists:users,id',
             'description' => 'required',
-            'transaction_date' => 'required|date',
+            'transaction_date' => 'required|date|after:now',
             'items' => 'required|array',
             'items.*' => 'exists:items,id',
             'quantities' => 'required|array',

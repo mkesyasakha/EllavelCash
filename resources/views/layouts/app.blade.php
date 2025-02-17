@@ -102,6 +102,14 @@
                     <span>Products</span></a>
             </li>
 
+            @hasrole('admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('discounts.index')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Discounts</span></a>
+            </li>
+            @endhasrole
+
             <li class="nav-item">
                 <a class="nav-link" href="{{route('transactions.index')}}">
                     <i class="fas fa-fw fa-table"></i>

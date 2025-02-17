@@ -24,7 +24,7 @@ class TransactionController extends Controller
         ->orderBy('id', 'desc')
         ->paginate(6)
         ->appends(['search' => $search]);
-
+        
         $transaction_customers = Transaction::where('user_id', auth()->id())
         ->whereHas('customers', function ($q) use ($search) {
             $q->where('name', 'like', "%$search%");
@@ -126,7 +126,13 @@ class TransactionController extends Controller
         }
 
         $transaction = Transaction::findOrFail($request->transaction_id);
-        $transaction->update(['promo_id' => $promo->id]);
+        $total = $transaction->total * ($promo->discount_percentage/100);
+        $discount = $transaction->total - $total;
+        $transaction->update([
+            'discount_id' => $promo->id,
+            'discount' => $discount,
+            'total' => $discount,
+        ]);
 
         return redirect()->back()->with('success', 'Promo code applied successfully!');
     }

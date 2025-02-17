@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Discount;
 use App\Http\Requests\StoreDiscountRequest;
 use App\Http\Requests\UpdateDiscountRequest;
+use Illuminate\Support\Str;
 
 class DiscountController extends Controller
 {
@@ -14,7 +15,8 @@ class DiscountController extends Controller
     public function index()
     {
         $discounts = Discount::orderBy('created_at', 'desc')->get();
-        return view('discounts.index', compact('discounts'));
+        $randomCode = Str::upper(Str::random(8));
+        return view('discounts.index', compact('discounts', 'randomCode'));
     }
 
     /**

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->text('description')->nullable();
             $table->integer('total');
+            $table->integer('discount')->nullable();
             $table->date('transaction_date');
             $table->enum('status', ['pending', 'success', 'failed']);
             $table->timestamps();

@@ -42,7 +42,17 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ optional($transaction->customers)->name }}</td>
                             <td>{{ $transaction->description }}</td>
+                            @if ($transaction->discounts)
+                            <td>
+                                Potongan:{{$transaction->discounts->discount_percentage }}%
+                                <br>
+                                <del style="color: red;">Rp.{{ number_format($transaction->total + $transaction->discount, 2) }}</del>
+                                <br>
+                                <span style="color: green;">Rp.{{ number_format($transaction->total, 2) }}</span>
+                            </td>
+                            @else
                             <td>Rp.{{ number_format($transaction->total, 2) }}</td>
+                            @endif
                             <td>{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('j M Y') }}</td>
                             <td>
                                 <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal{{ $transaction->id }}"><i class="bi bi-eye-fill    "></i> Lihat Bukti
@@ -58,9 +68,9 @@
                                 @if ($transaction->status == 'pending')
                                 <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#accTransactionModal-{{ $transaction->id }}">Acc</button>
                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editTransactionModal-{{ $transaction->id }}">Edit</button>
-                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#applyPromoModal">
-                                    Apply Promo Code
-                                </button>
+                                @if ($transaction->discount_id == null)
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#applyPromoModal">Apply Promo Code</button>
+                                @endif
                                 @endif
                                 <!-- Tombol Hapus memicu modal delete -->
                                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#showTransactionModal-{{ $transaction->id }}">Detail</button>
@@ -80,7 +90,7 @@
                                         <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
                                         <div class="modal-body">
                                             <label for="promo_code">Enter Promo Code:</label>
-                                            <input type="text" name="promo_code" class="form-control" required>
+                                            <input type="text" name="promo_code" class="form-control">
                                         </div>
                                         <div class="modal-footer">
                                             <button type="submit" class="btn btn-success">Apply</button>

@@ -17,9 +17,19 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        $items = Item::orderBy('id', 'desc')
-                ->where('name', 'like', "%$search%")
-                ->get();
+        $sort = $request->sort_by;
+        $items = Item::with('category') // Eager load kategori untuk menghindari N+1 problem
+            ->when($sort, function ($query) use ($sort) {
+                $query->whereHas('category', function ($q) use ($sort) {
+                    $q->where('id', $sort);
+                });
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(5)
+            ->appends(request()->query());
         $categories = Category::all();
         return view('items.index', compact('items', 'categories'));
     }

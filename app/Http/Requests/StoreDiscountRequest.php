@@ -6,23 +6,18 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDiscountRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true; // Ubah jika perlu otorisasi khusus
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'code' => 'required|string|unique:discounts,code|max:50',
+            'discount_percentage' => 'nullable|integer|min:0|max:100',
+            'valid_until' => 'required|date|after:today',
+            'status' => 'required|in:active,expired',
         ];
     }
 }
