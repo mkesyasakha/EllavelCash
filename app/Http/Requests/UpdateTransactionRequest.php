@@ -17,7 +17,7 @@ class UpdateTransactionRequest extends FormRequest
             'proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'user_id' => 'required|exists:users,id',
             'description' => 'required',
-            'transaction_date' => 'required|date|after:now',
+            'transaction_date' => 'required|date|after_or_equal:today',
             'items' => 'required|array',
             'items.*' => 'exists:items,id',
             'quantities' => 'required|array',

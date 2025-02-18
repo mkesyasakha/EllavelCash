@@ -16,7 +16,7 @@ class StoreDiscountRequest extends FormRequest
         return [
             'code' => 'required|string|unique:discounts,code|max:50',
             'discount_percentage' => 'nullable|integer|min:0|max:100',
-            'valid_until' => 'required|date|after_or_equal  :today',
+            'valid_until' => 'required|date|after_or_equal:today',
             'status' => 'required|in:active,expired',
         ];
     }

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateItemRequest;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -80,7 +81,20 @@ class ItemController extends Controller
      */
     public function update(UpdateItemRequest $request, Item $item)
     {
-        $item->update($request->all());
+        if($request->hasFile('photo')){
+            if($item->photo){
+                Storage::disk('public')->delete($item->photo);
+            }
+            $path = $request->file('photo')->store('photo', 'public');
+        }
+        $item->update([
+            'photo' => $path,
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'stock' => $request->stock,
+        ]);
         return redirect()->route('items.index')->with('success', 'Item updated successfully.');
     }
 

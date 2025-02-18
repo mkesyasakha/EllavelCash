@@ -57,9 +57,15 @@
                                 </button>
                             </td>
                             <td>
-                                <span class="badge {{ $transaction->status == 'pending' ? 'bg-warning' : 'bg-success' }}">
+                                @if($transaction->status == 'failed')
+                                <span class="badge bg-danger text-light">
                                     {{ ucfirst($transaction->status) }}
                                 </span>
+                                @else
+                                <span class="badge {{ $transaction->status == 'pending' ? 'bg-warning' : 'bg-success' }} text-light">
+                                    {{ ucfirst($transaction->status) }}
+                                </span>
+                                @endif
                             </td>
                             <td>
                                 <!-- Tombol Edit memicu modal edit -->
@@ -144,19 +150,29 @@
                                         </div>
                                         <hr>
                                         <p><strong>Total:</strong> Rp.{{ number_format($transaction->total, 2) }}</p>
-                                        <p><strong>Status:</strong> <span class="badge {{ $transaction->status == 'pending' ? 'bg-warning' : 'bg-success' }}">{{ ucfirst($transaction->status) }}</span></p>
+                                        @if($transaction->status == 'failed')
+                                        <p><strong>Status:</strong> <span class="badge bg-danger text-light">{{ ucfirst($transaction->status) }}</span></p>
+                                        @else
+                                        <p><strong>Status:</strong> <span class="badge {{ $transaction->status == 'pending' ? 'bg-warning' : 'bg-success' }} text-light">{{ ucfirst($transaction->status) }}</span></p>
+                                        @endif
                                         <hr>
                                         <p><strong>Bukti Transaksi:</strong></p>
                                         <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid" alt="Bukti Transaksi">
                                         <hr>
+                                        @if($transaction->status == 'success')
                                         <p>Terima kasih atas pembelian Anda!</p>
+                                        @elseif($transaction->status == 'pending')
+                                        <p>Pembelian anda sedang di proses</p>
+                                        @else
+                                        <p style="color: red;">Maaf, Pembelian Anda Gagal!</p>
+                                        @endif
                                     </div>
                                     <div class="modal-footer">
-
+                                        @if($transaction->status == 'success')
                                         <a href="{{ route('transactions.download-pdf', $transaction->id) }}" class="btn btn-danger">
                                             <i class="fas fa-file-pdf"></i> Download PDF
                                         </a>
-
+                                        @endif
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                                     </div>
                                 </div>
