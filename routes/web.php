@@ -15,7 +15,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 Auth::routes();
 
 Route::middleware('auth')->group(function(){
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [App\Http\Controllers\LandingController::class, 'dashboard'])->name('home');
     Route::resource('items', App\Http\Controllers\ItemController::class);
     Route::resource('transactions', TransactionController::class)->except(['show']);
     Route::get('/transactions/status-chart', [TransactionController::class, 'getTransactionStatusData']);

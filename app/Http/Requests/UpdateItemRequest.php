@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateItemRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class UpdateItemRequest extends FormRequest
     {
         return [
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'name' => 'sometimes|required|string|max:255',
+            'name' => ['required','string','max:255', Rule::unique('items', 'name')],    
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0|max:999999.99',
             'stock' => 'sometimes|required|integer|min:0',

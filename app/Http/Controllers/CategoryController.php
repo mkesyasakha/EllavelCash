@@ -73,7 +73,7 @@ class CategoryController extends Controller
         try{
             $category->delete();
             return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
-        }catch(Exception $e){
+        }catch(\Exception $e){
             return redirect()->route('categories.index')->with('error', 'Failed to delete category. It may be referenced by other records.');
         }
     }
