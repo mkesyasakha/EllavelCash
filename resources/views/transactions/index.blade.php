@@ -117,7 +117,9 @@
                                         <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid rounded" alt="Bukti Transaksi">
                                     </div>
                                     <div class="modal-footer">
+                                        @if($transaction->status == 'success')
                                         <a href="{{ asset('storage/' . $transaction->proof) }}" class="btn btn-primary" download>Download</a>
+                                        @endif
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                     </div>
                                 </div>

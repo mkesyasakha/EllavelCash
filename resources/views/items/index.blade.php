@@ -83,17 +83,11 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <div class="form-group">
-                                                <label for="category_id">Kategori</label>
-                                                <select class="form-control" id="category_id" name="category_id">
-                                                    @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ $item->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                           
                                             <div class="form-group">
                                                 <label for="photo">Foto Barang</label>
                                                 <input type="file" class="form-control" id="photo" name="photo">
+                                                <img id="photoPreview" src="{{ asset('storage/' . $item->photo) }}" alt="Preview Foto" class="img-thumbnail mt-2" style="max-width: 200px;">
                                             </div>
                                             <div class="form-group">
                                                 <label for="name">Nama Barang</label>
@@ -103,11 +97,11 @@
                                                 <label for="description">Deskripsi</label>
                                                 <textarea class="form-control" id="description" name="description">{{ $item->description }}</textarea>
                                             </div>
-                                            <div class="form-group">
+                                             <div class="form-group">
                                                 <label for="category_id">Kategori</label>
                                                 <select class="form-control" id="category_id" name="category_id">
                                                     @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                                    <option value="{{ $category->id }}" {{ $item->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

@@ -81,19 +81,16 @@ class ItemController extends Controller
      */
     public function update(UpdateItemRequest $request, Item $item)
     {
-        if($request->hasFile('photo')){
-            if($item->photo){
-                Storage::disk('public')->delete($item->photo);
-            }
-            $path = $request->file('photo')->store('photo', 'public');
-        }
+
+        Storage::disk('public')->delete($item->photo);
+        $path = $request->file('photo')->store('photo', 'public');
         $item->update([
             'photo' => $path,
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'category_id' => $request->category_id,
-            'stock' => $request->stock,
+            'stock' => $request->stock, 
         ]);
         return redirect()->route('items.index')->with('success', 'Item updated successfully.');
     }

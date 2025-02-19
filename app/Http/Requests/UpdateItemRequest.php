@@ -22,7 +22,7 @@ class UpdateItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0|max:999999.99',

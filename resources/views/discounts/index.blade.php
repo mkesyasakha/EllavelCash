@@ -68,13 +68,13 @@
                                     </div>
                                     <div class="mb-3">
                                         <label>Berlaku Hingga</label>
-                                        <input type="date" name="valid_until" class="form-control" value="{{ $discount->valid_until }}">
+                                        <input type="date" name="valid_until" class="form-control" value="{{ $discount->valid_until }}" min="{{now()->format('Y-m-d')}}">
                                     </div>
                                     <div class="mb-3">
                                         <label>Status</label>
                                         <select name="status" class="form-control">
-                                            <option value="active" {{ $discount->status == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="expired" {{ $discount->status == 'active' ? 'selected' : '' }}>Expired</option>
+                                            <option value="active">Active</option>
+                                            <option value="expired">Expired</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-success">Update</button>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="mb-3">
                         <label>Berlaku Hingga</label>
-                        <input type="date" name="valid_until" class="form-control">
+                        <input type="date" name="valid_until" class="form-control" min="{{now()->format('Y-m-d')}}">
                     </div>
                     <div class="mb-3">
                         <select name="status" class="form-control" hidden>

@@ -27,7 +27,7 @@
                     <div class="card-body p-0">
                         <div class="row">
                             <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                                <svg class="d-flex justify-center" xmlns="http://www.w3.org/2000/svg" width="300" height="605" viewBox="0 0 453 605.97873" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" artist="Katerina Limpitsouni" source="https://undraw.co/">
+                                <svg class="d-flex" style="width: 25rem; margin-top: 2rem; margin-left: 5rem;" xmlns="http://www.w3.org/2000/svg" width="300" height="605" viewBox="0 0 453 605.97873" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" artist="Katerina Limpitsouni" source="https://undraw.co/">
                                     <path d="m287.87012,128.72873c0,1.6499-.18994,3.33984-.58984,5.03003l-16.71045,71.11011c-2.36963,10.10986-12.5,16.36987-22.6001,13.97998l-66.96973-20.78027-3.27002-1.00977c-3.81006,2.75977-9.12988,4.02979-14.68994,3.0498-9.72021-1.71997-16.4502-9.62988-15.03027-17.67993,1.42041-8.04004,10.4502-13.16992,20.17041-11.45996,5.56006.97998,10.12988,3.98999,12.77002,7.88013l.0498.00977.16992.03003,58.29004,7.21021,4.8999-59.12012c.93018-11.30005,10.37012-19.98999,21.70996-19.98999,12.30029,0,21.80029,10.05005,21.80029,21.73999Z" fill="#ed9da0" stroke-width="0" />
                                     <path d="m287.87012,128.72873c0,1.6499-.18994,3.33984-.58984,5.03003l-13.71045,74.11011c-2.36963,10.10986-12.5,16.36987-22.6001,13.97998l-66.96973-18.62012,3-29h0l51,7,6.35986-54.25c.93018-11.30005,10.37012-19.98999,21.70996-19.98999,12.30029,0,21.80029,10.05005,21.80029,21.73999Z" fill="#2f2e43" stroke-width="0" />
                                     <polyline points="0 605.22873 35.54 605.22873 67.13 605.22873 68.4 605.22873 96.21 605.22873 286.66 605.22873 331.98 605.22873 453 605.22873" fill="none" stroke="#090814" stroke-miterlimit="10" stroke-width="1.5" />
@@ -73,13 +73,7 @@
                                             </span>
                                             @enderror
                                         </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                                <label class="custom-control-label" for="remember">Remember Me</label>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-user btn-block">Login</button>
+                                            <button type="submit" class="btn btn-primary btn-user btn-block">Login</button>
                                         <hr>
                                         @if (Route::has('password.request'))
                                         <a class="btn btn-link" href="{{ route('password.request') }}">Forgot Your Password?</a>

@@ -15,7 +15,7 @@
 <body class="bg-gradient-primary">
     <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top" style="background-color: rgba(188, 224, 255, 0.84);">
         <div class="container-fluid">
-            <a class="navbar-brand text-primary font-weight-bold" href="#"><img style="width: 3.5rem;" src="{{asset('asset/img/logo.png')}}" alt=""></a>
+            <a class="navbar-brand text-primary font-weight-bold" href="#"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
