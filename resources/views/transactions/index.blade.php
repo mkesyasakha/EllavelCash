@@ -53,7 +53,7 @@
                             @endif
                             <td>{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('j M Y') }}</td>
                             <td>
-                                @if ($transaction->proof == null)
+                                @if ($transaction->proof == null && $transaction->status == 'pending')
                                 <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#AddProofModal-{{$transaction->id}}">Add Proof</button>
                                 @else
                                 <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal{{ $transaction->id }}"><i class="bi bi-eye-fill    "></i> Lihat Bukti
@@ -118,7 +118,11 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body text-center">
+                                        @if ($transaction->proof == null)
+                                        Tidak ada bukti transaksi
+                                        @else
                                         <img src="{{ asset('storage/' . $transaction->proof) }}" class="img-fluid rounded" alt="Bukti Transaksi">
+                                        @endif
                                     </div>
                                     <div class="modal-footer">
                                         @if($transaction->status == 'success')
