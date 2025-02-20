@@ -53,7 +53,11 @@
                             @endif
                             <td>{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('j M Y') }}</td>
                             <td>
+                                @if ($transaction->proof == null)
+                                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#AddProofModal-{{$transaction->id}}">Add Proof</button>
+                                @else
                                 <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal{{ $transaction->id }}"><i class="bi bi-eye-fill    "></i> Lihat Bukti
+                                    @endif
                                 </button>
                             </td>
                             <td>
@@ -183,6 +187,30 @@
 
 
                         <!-- Modal Edit Transaksi -->
+                        <div class="modal fade" id="AddProofModal-{{ $transaction->id }}">
+                            <div class="modal-dialog">
+                                <form action="{{ route('proofs.update', $transaction->id) }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Bukti</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Bukti Transaksi -->
+                                            <div class="form-group">
+                                                <label for="proof">Bukti Transaksi</label>
+                                                <input type="file" name="proof" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div class="modal fade" id="editTransactionModal-{{ $transaction->id }}">
                             <div class="modal-dialog">
                                 <form action="{{ route('transactions.update', $transaction->id) }}" method="POST" enctype="multipart/form-data">
@@ -225,10 +253,9 @@
                                             </div>
 
                                             <!-- Status -->
-                                            <div class="form-group">
-                                                <label for="status">Status</label>
-                                                <input type="text" name="status" class="form-control" value="{{ $transaction->status }}">
-                                            </div>
+
+                                            <input type="text" name="status" class="form-control" value="{{ $transaction->status }}" hidden>
+
 
                                             <!-- Pilih Item dan Kuantitas -->
                                             <div class="form-group">
@@ -349,9 +376,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-center mt-3">
-                {{ $transactions->links('vendor.pagination.bootstrap-4') }}
-            </div>
+            <!--     -->
         </div>
     </div>
     @endhasrole
@@ -398,11 +423,37 @@
                                 <!-- Tombol Edit memicu modal edit -->
                                 @if ($transaction->status == 'pending')
                                 <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editTransactionModal-{{ $transaction->id }}">Edit</button>
+                                @if ($transaction->discount_id == null)
+                                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#applyPromoModal">Apply Promo Code</button>
+                                @endif
                                 @endif
                                 <!-- Tombol Hapus memicu modal delete -->
                                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#showTransactionModal-{{ $transaction->id }}">Detail</button>
                             </td>
                         </tr>
+
+                        <div class="modal fade" id="applyPromoModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Apply Promo Code</h5>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <form action="{{ route('transactions.applyPromo') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+                                        <div class="modal-body">
+                                            <label for="promo_code">Enter Promo Code:</label>
+                                            <input type="text" name="promo_code" class="form-control">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">Apply</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="modal fade" id="proofModal{{ $transaction->id }}" tabindex="-1" aria-labelledby="proofModalLabel{{ $transaction->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
@@ -499,10 +550,9 @@
                                             </div>
 
                                             <!-- Status -->
-                                            <div class="form-group">
-                                                <label for="status">Status</label>
-                                                <input type="text" name="status" class="form-control" value="{{ $transaction->status }}">
-                                            </div>
+
+                                            <input type="text" name="status" class="form-control" value="{{ $transaction->status }}" hidden>
+
 
                                             <!-- Pilih Item dan Kuantitas -->
                                             <div class="form-group">
@@ -617,11 +667,6 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <!-- Bukti Transaksi -->
-                    <div class="form-group">
-                        <label for="proof">Bukti Transaksi</label>
-                        <input type="file" name="proof" class="form-control">
-                    </div>
 
                     <!-- Pilih Pengguna -->
                     <div class="form-group">
@@ -646,10 +691,9 @@
                     </div>
 
                     <!-- Status -->
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <input type="text" name="status" class="form-control" value="pending" readonly>
-                    </div>
+
+                    <input type="text" name="status" class="form-control" value="pending" hidden>
+
 
                     <!-- Pilih Item dan Kuantitas -->
                     <div class="form-group">
@@ -688,18 +732,12 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <!-- Bukti Transaksi -->
-                    <div class="form-group">
-                        <label for="proof">Bukti Transaksi</label>
-                        <input type="file" name="proof" class="form-control">
-                    </div>
 
                     <!-- Pilih Pengguna -->
-                    <div class="form-group">
-                        <label for="user_id">Pengguna</label>
-                        <input type="text" name="user_id" class="form-control" value="{{ Auth::user()->id }}" hidden>
-                        <input type="text" class="form-control" value="{{ Auth::user()->name }}" readonly>
-                    </div>
+
+
+                    <input type="text" name="user_id" class="form-control" value="{{ Auth::user()->id }}" hidden>
+
 
                     <!-- Deskripsi -->
                     <div class="form-group">
@@ -714,10 +752,9 @@
                     </div>
 
                     <!-- Status -->
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <input type="text" name="status" class="form-control" value="pending" readonly>
-                    </div>
+
+                    <input type="text" name="status" class="form-control" value="pending" hidden>
+
 
                     <!-- Pilih Item dan Kuantitas -->
                     <div class="form-group">

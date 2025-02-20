@@ -14,7 +14,6 @@ class StoreTransactionRequest extends FormRequest
     public function rules()
     {
         return [
-            'proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'user_id' => 'required|exists:users,id',
             'description' => 'required',
             'transaction_date' => 'required|date|after_or_equal:today',

@@ -24,7 +24,7 @@ class UpdateItemRequest extends FormRequest
     {
         return [
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'name' => ['required','string','max:255', Rule::unique('items', 'name')],    
+            'name' => ['required','string','max:255', Rule::unique('items', 'name')->ignore($this->item->id)],    
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0|max:999999.99',
             'stock' => 'sometimes|required|integer|min:0',

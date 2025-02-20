@@ -49,31 +49,42 @@ class TransactionController extends Controller
 
     public function store(StoreTransactionRequest $request)
     {
-        $path = $request->file('proof')->store('proofs', 'public');
-
-
         $total = 0;
+        $itemsToAttach = [];
+
         foreach ($request->items as $index => $item_id) {
             $item = Item::find($item_id);
             $quantity = $request->quantities[$index] ?? 1;
-            if ($item->stock < $quantity) {
-                return redirect()->route('transactions.index')->with('error', "Stok untuk item '{$item->name}' tidak mencukupi.");
-            }else{
-                $transaction = Transaction::create([
-                    'proof' => $path,
-                    'user_id' => $request->user_id,
-                    'description' => $request->description,
-                    'transaction_date' => $request->transaction_date,
-                    'status' => $request->status ?? 'pending',
-                    'total' => 0, // Akan dihitung di bawah
-                ]);
-                $item->decrement('stock', $quantity);
-                $transaction->items()->attach($item_id, ['quantity' => $quantity]);
-                $total += $item->price * $quantity;
+
+            // Cek apakah stok cukup sebelum menyimpan gambar
+            if (!$item || $item->stock < $quantity) {
+                return redirect()->back()->with('error', "Stok untuk {$item->name} tidak mencukupi! Stok tersedia: {$item->stock}");
             }
+
+            // Tambahkan item ke transaksi (jika stok cukup)
+            $itemsToAttach[$item_id] = ['quantity' => $quantity];
+            $total += $item->price * $quantity;
         }
 
-        $transaction->update(['total' => $total]);
+        // Buat transaksi baru setelah stok diverifikasi
+        $transaction = Transaction::create([
+            'user_id' => $request->user_id,
+            'total' => $total,
+            'description' => $request->description,
+            'transaction_date' => $request->transaction_date ?? now(),
+            'status' => $request->status,
+        ]);
+
+        // Simpan item yang telah diverifikasi ke transaksi
+        $transaction->items()->attach($itemsToAttach);
+
+        // Kurangi stok setelah transaksi berhasil dibuat
+        foreach ($request->items as $index => $item_id) {
+            $item = Item::find($item_id);
+            $quantity = $request->quantities[$index] ?? 1;
+            $item->stock -= $quantity;
+            $item->save();
+        }
 
         return redirect()->route('transactions.index')->with('success', 'Transaction created successfully.');
     }
@@ -125,14 +136,19 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors('Invalid promo code');
         }
 
-        $transaction = Transaction::findOrFail($request->transaction_id);
-        $total = $transaction->total * ($promo->discount_percentage/100);
-        $discount = $transaction->total - $total;
-        $transaction->update([
-            'discount_id' => $promo->id,
-            'discount' => $discount,
-            'total' => $discount,
-        ]);
+        if($promo->status == 'expired'){
+            return redirect()->back()->withErrors('Promo code expired');
+        }else{
+            $transaction = Transaction::findOrFail($request->transaction_id);
+            $total = $transaction->total * ($promo->discount_percentage/100);
+            $discount = $transaction->total - $total;
+            $transaction->update([
+                'discount_id' => $promo->id,
+                'discount' => $discount,
+                'total' => $discount,
+            ]);
+        }
+
 
         return redirect()->back()->with('success', 'Promo code applied successfully!');
     }

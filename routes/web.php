@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ProofController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/transactions/{id}/download-pdf', [TransactionController::class, 'downloadPDF'])->name('transactions.download-pdf');
     Route::get('/latest-transactions', [MessageController::class, 'getLatestTransactions']);
     Route::post('/transactions/apply-promo', [TransactionController::class, 'applyPromo'])->name('transactions.applyPromo');
+    Route::put('/transactions/{transaction}/proofs', [ProofController::class, 'update'])->name('proofs.update');
 });
 
 Route::middleware('auth', 'role:admin')->group(function(){
