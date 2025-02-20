@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label>Persentase Diskon (Opsional)</label>
-                                        <input type="number" name="discount_percentage" class="form-control" value="{{ $discount->discount_percentage }}" min="0" max="100">
+                                        <input type="number" name="discount_percentage" class="form-control" value="{{ $discount->discount_percentage }}">
                                     </div>
                                     <div class="mb-3">
                                         <label>Berlaku Hingga</label>
@@ -129,12 +129,12 @@
                     @csrf
                     <div class="mb-3">
                         <label>Kode Promo</label>
-                        <input type="text" name="code" class="form-control" value="{{ $randomCode }}" readonly>
+                        <input type="text" name="code" class="form-control" value="{{ $randomCode }}">
                     </div>
 
                     <div class="mb-3">
                         <label>Persentase Diskon (Opsional)</label>
-                        <input type="number" name="discount_percentage" class="form-control" min="0" max="100">
+                        <input type="number" name="discount_percentage" class="form-control">
                     </div>
                     <div class="mb-3">
                         <label>Berlaku Hingga</label>
