@@ -19,7 +19,8 @@ class TransactionController extends Controller
     {
         $search = $request->search;
         $transactions = Transaction::whereHas('customers', function ($q) use ($search) {
-            $q->where('name', 'like', "%$search%");
+            $q->where('name', 'like', "%$search%")
+            ->orWhere('description', 'like', "%$search%");
         })->orderByRaw("CASE WHEN status = 'pending' THEN 1 ELSE 2 END")
         ->orderBy('id', 'desc')
         ->paginate(6)
